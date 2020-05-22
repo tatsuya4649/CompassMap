@@ -17,12 +17,14 @@ extension CompassMapViewController{
         guard let userLocation = userLocation else{return}
         distance = Distance(userLocation, goalLocation)
         let distanceString = distance.getTwoLocationDistanceString()
-        distanceLabel = UILabel()
+        if distanceLabel == nil{
+            distanceLabel = UILabel()
+            view.addSubview(distanceLabel)
+        }
         distanceLabel.text = distanceString
         distanceLabel.font = .systemFont(ofSize: DEFAULT_DISTANCE_LABEL_FONT_SIZE, weight: DEFAULT_DISTANCE_LABEL_FONT_WEIGHT)
         distanceLabel.textColor = DEFAULT_DISTANCE_LABEL_FONT_COLOR
         distanceLabel.sizeToFit()
         distanceLabel.center = CGPoint(x: view.center.x, y: addressLabel != nil ? addressLabel.frame.maxY + 10 + distanceLabel.frame.size.height/2 : 10 + distanceLabel.frame.size.height/2)
-        view.addSubview(distanceLabel)
     }
 }

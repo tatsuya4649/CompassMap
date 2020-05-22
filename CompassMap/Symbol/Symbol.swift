@@ -17,7 +17,7 @@ protocol SymbolDelegate : AnyObject{
 class Symbol: UIView {
     weak var delegate : SymbolDelegate!
     var button : UIButton!
-    var mapView : UIView!
+    var mapView : SymbolMapView!
     var map : SymbolMap!
     var symbolType : SymbolType!
     override init(frame: CGRect) {

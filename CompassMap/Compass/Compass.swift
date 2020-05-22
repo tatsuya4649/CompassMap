@@ -13,6 +13,8 @@ import Hero
 
 protocol CompassDelegate : AnyObject {
     func goalCircle() -> MKCircle?
+    ///現在地から目的地までのルートラインを作成してMKPolyLineだけ返してもらうデリゲートメソッド
+    func nowToGoalPolyLine(completion:((MKRoute)->Void)?)
 }
 ///現在地から目的地の場所を指すコンパス
 final class Compass: UIView {

@@ -16,9 +16,15 @@ class SymbolMap : MKMapView{
     }
 }
 
+class SymbolMapView : UIView{
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        return nil
+    }
+}
+
 extension Symbol:MKMapViewDelegate{
     public func settingSymbolMap(){
-        mapView = UIView(frame: button.frame)
+        mapView = SymbolMapView(frame: button.frame)
         mapView.layer.cornerRadius = mapView.frame.size.height/2
         mapView.clipsToBounds = true
         button.addSubview(mapView)

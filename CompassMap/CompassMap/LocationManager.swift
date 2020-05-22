@@ -40,6 +40,15 @@ extension CompassMapViewController:CLLocationManagerDelegate{
         guard let circleRegion = region as? CLCircularRegion else{return}
         guard let _ = userLocation else{return}
         direction = Direction(userLocation, CLLocation(latitude: circleRegion.center.latitude, longitude: circleRegion.center.longitude))
+        //位置情報が更新するたびに距離の更新も行う
+        distanceLabelSetting()
+        //ルートと時間の更新も行う
+        nowToGoalPolyLine(completion: {[weak self] route in
+            guard let _ = self else{return}
+            self!.settingTimeLabel(route.expectedTravelTime)
+            guard let compass = self!.compass else{return}
+            compass.nowLocationToGoalLocationPolyLineUpdate(route)
+        })
         guard let compass = compass else{return}
         compass.changeHeading(direction.getGoalDirectionFromNow(),Double(newHeading.trueHeading))
     }

@@ -21,6 +21,9 @@ extension CompassMapViewController{
         let progress = transition.y/2 / view.bounds.height
         switch sender.state {
         case .began:
+            if compass != nil{
+                compass.changeMapSize()
+            }
             hero_dismissViewController()
         case .changed:
             let translation = sender.translation(in: nil)
@@ -31,6 +34,9 @@ extension CompassMapViewController{
                 Hero.shared.finish()
             } else {
                 Hero.shared.cancel()
+            }
+            if compass != nil{
+                compass.resetMapSize()
             }
         default:break
         }

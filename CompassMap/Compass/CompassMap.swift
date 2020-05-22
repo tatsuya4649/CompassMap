@@ -10,6 +10,9 @@ import Foundation
 import UIKit
 import MapKit
 
+let MAP_POLYLINE_SIZE : CGFloat = 5.0
+let MAP_POLYLINE_COLOR = UIColor(red: 255/255, green: 0/255, blue: 0/255, alpha: 0.7)
+
 extension Compass:MKMapViewDelegate{
     public func mapSetting(){
         mapView = UIView(frame: CGRect(x: 0, y: 0, width: self.frame.size.width*0.5, height: self.frame.size.width*0.5))
@@ -29,6 +32,30 @@ extension Compass:MKMapViewDelegate{
         map.layer.borderWidth = 1
         map.layer.borderColor =  UIColor.lightGray.cgColor
         mapView.addSubview(map)
+    }
+    public func nowLocationToGoalLocationPolyLine(){
+        guard let delegate = delegate else{return}
+        delegate.nowToGoalPolyLine(completion: {[weak self] route in
+            guard let _ = self else{return}
+            guard let polyLine = route.polyline as? MKPolyline else{return}
+            self!.map.addOverlay(polyLine)
+        })
+    }
+    ///位置情報の更新に従って、行う
+    public func nowLocationToGoalLocationPolyLineUpdate(_ route:MKRoute){
+        guard let _ = map else{return}
+        guard let polyline = route.polyline as? MKPolyline else{return}
+        removeMapPolyLine()
+        map.addOverlay(polyline)
+    }
+    ///地図上からPolylineを削除するメソッド``
+    private func removeMapPolyLine(){
+        guard map.overlays.count > 0 else{return}
+        for overlay in map.overlays{
+            if let polyline = overlay as? MKPolyline{
+                map.removeOverlay(overlay)
+            }
+        }
     }
     ///方角が変わったときにセッティングをする
     public func changeHeading(_ angle:Double,_ nowHeading:Double){
@@ -54,6 +81,26 @@ extension Compass:MKMapViewDelegate{
             circle.lineWidth = DEFAULT_CIRCLE_LINEWIDTH
             return circle
         }
+        if let polyLine = overlay as? MKPolyline{
+            let routeRenderer = MKPolylineRenderer(polyline:polyLine)
+            routeRenderer.lineWidth = MAP_POLYLINE_SIZE
+            routeRenderer.strokeColor = MAP_POLYLINE_COLOR
+            return routeRenderer
+        }
         return MKOverlayRenderer()
+    }
+    public func changeMapSize(){
+        guard let _ = map else{return}
+        guard let _ = mapView else{return}
+        map.frame = mapView.frame
+        map.center = CGPoint(x: mapView.frame.size.width/2, y: mapView.frame.size.height/2)
+        map.layer.cornerRadius = map.frame.size.height/2
+    }
+    public func resetMapSize(){
+        guard let _ = map else{return}
+        guard let _ = mapView else{return}
+        map.frame = CGRect(x: 0, y: 0, width: self.frame.size.width, height: self.frame.size.width)
+        map.center = CGPoint(x: mapView.frame.size.width/2, y: mapView.frame.size.height/2)
+        map.layer.cornerRadius = map.frame.size.height/2
     }
 }
