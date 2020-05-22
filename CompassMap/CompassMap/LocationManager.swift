@@ -40,7 +40,7 @@ extension CompassMapViewController:CLLocationManagerDelegate{
         guard let circleRegion = region as? CLCircularRegion else{return}
         guard let _ = userLocation else{return}
         direction = Direction(userLocation, CLLocation(latitude: circleRegion.center.latitude, longitude: circleRegion.center.longitude))
-        print(direction.getGoalDirectionFromNow())
-        map.setUserTrackingMode(.followWithHeading, animated: true)
+        guard let compass = compass else{return}
+        compass.changeHeading(direction.getGoalDirectionFromNow(),Double(newHeading.trueHeading))
     }
 }
