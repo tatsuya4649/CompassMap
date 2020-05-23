@@ -32,14 +32,6 @@ extension CompassMapViewController:CLLocationManagerDelegate{
         userLocation = location
         //地図の中心をユーザーに合わせる
         centerSetMap(location)
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-        print(newHeading.magneticHeading)
-        guard let region = info[.region] as? CLRegion else{return}
-        guard let circleRegion = region as? CLCircularRegion else{return}
-        guard let _ = userLocation else{return}
-        direction = Direction(userLocation, CLLocation(latitude: circleRegion.center.latitude, longitude: circleRegion.center.longitude))
         //位置情報が更新するたびに距離の更新も行う
         distanceLabelSetting()
         //ルートと時間の更新も行う
@@ -49,6 +41,17 @@ extension CompassMapViewController:CLLocationManagerDelegate{
             guard let compass = self!.compass else{return}
             compass.nowLocationToGoalLocationPolyLineUpdate(route)
         })
+        //読み上げ通知に関するセッティング
+        readinHeadingSetting()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        print(newHeading.magneticHeading)
+        readingHeadingUpdate(newHeading)
+        guard let region = info[.region] as? CLRegion else{return}
+        guard let circleRegion = region as? CLCircularRegion else{return}
+        guard let _ = userLocation else{return}
+        direction = Direction(userLocation, CLLocation(latitude: circleRegion.center.latitude, longitude: circleRegion.center.longitude))
         guard let compass = compass else{return}
         compass.changeHeading(direction.getGoalDirectionFromNow(),Double(newHeading.trueHeading))
     }

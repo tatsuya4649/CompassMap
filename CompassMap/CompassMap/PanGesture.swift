@@ -16,6 +16,11 @@ extension CompassMapViewController{
         pan = UIPanGestureRecognizer(target: self, action: #selector(panNow))
         view.addGestureRecognizer(pan)
     }
+    public func removePanGesture(){
+        guard let _ = pan else{return}
+        view.removeGestureRecognizer(pan)
+        pan = nil
+    }
     @objc func panNow(_ sender:UIPanGestureRecognizer){
         let transition = sender.translation(in: nil)
         let progress = transition.y/2 / view.bounds.height
