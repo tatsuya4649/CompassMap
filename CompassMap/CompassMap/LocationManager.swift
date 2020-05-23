@@ -46,7 +46,7 @@ extension CompassMapViewController:CLLocationManagerDelegate{
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-        print(newHeading.magneticHeading)
+        //print(newHeading.magneticHeading)
         readingHeadingUpdate(newHeading)
         guard let region = info[.region] as? CLRegion else{return}
         guard let circleRegion = region as? CLCircularRegion else{return}

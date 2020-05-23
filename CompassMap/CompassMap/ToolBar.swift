@@ -18,11 +18,12 @@ extension CompassMapViewController:FloatingPanelControllerDelegate{
         mapButtonItem = UIBarButtonItem(image: UIImage.fontAwesomeIcon(name: .map, style: .solid, textColor: .white, size: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(mapButtonItemClick))
         notificationButtonItem = UIBarButtonItem(image: UIImage.fontAwesomeIcon(name: .bell, style: .solid, textColor: .white, size: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(notificationButtonItemClick))
         shareButtonItem = UIBarButtonItem(image: UIImage.fontAwesomeIcon(name: .shareSquare, style: .solid, textColor: .white, size: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(shareButtonItemClick))
+        changeCompassButtonItem = UIBarButtonItem(image: UIImage.fontAwesomeIcon(name: .syncAlt, style: .solid, textColor: .white, size: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(changeCompassButtonItemClick))
         toolBar.layer.cornerRadius = toolBar.frame.size.height/2
         toolBar.barTintColor = .black
         toolBar.clipsToBounds = true
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolBar.items = [flexibleSpace,mapButtonItem,flexibleSpace,notificationButtonItem,flexibleSpace,shareButtonItem,flexibleSpace]
+        toolBar.items = [flexibleSpace,mapButtonItem,flexibleSpace,notificationButtonItem,flexibleSpace,shareButtonItem,flexibleSpace,changeCompassButtonItem,flexibleSpace]
         toolBar.center = CGPoint(x: view.center.x, y: compass.frame.maxY + 20 + toolBar.frame.size.height/2)
         view.addSubview(toolBar)
     }
@@ -86,5 +87,10 @@ extension CompassMapViewController:FloatingPanelControllerDelegate{
             UIGraphicsEndImageContext()
             return nil
         }
+    }
+    
+    @objc func changeCompassButtonItemClick(_ sender:UIBarButtonItem){
+        print("ツールバーの変更ボタンがクリックされました")
+        impact()
     }
 }

@@ -41,4 +41,18 @@ final class Direction{
     private func toRadian(_ angle:Double) -> Double{
         return angle * Double.pi / 180
     }
+    
+    public class func makeSentences(_ addStateRawValue:Bool,_ differenceDirection:Double,_ state:ReadingHeadingStateString)->String?{
+        guard differenceDirection != 0.0 && differenceDirection != 360.0 else{return nil}
+        var leftOrRight = String()
+        //180度以下なら左回り
+        if differenceDirection <= 180{
+            leftOrRight = LeftOrRight.right.rawValue
+        }else{
+            //180度以上なら右回り
+            leftOrRight = LeftOrRight.left.rawValue
+        }
+        let string = "\(leftOrRight)に\(round(differenceDirection))度回転した方向が正しい方向です。"
+        return addStateRawValue ? state.rawValue + string : state.rawValue
+    }
 }

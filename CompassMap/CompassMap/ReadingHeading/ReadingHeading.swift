@@ -48,9 +48,9 @@ public enum ReadingHeadingStateString : String{
     ///ずれているときに読み上げ文章
     case off = "方向がずれています。"
     ///非常にずれているときの読み上げ文章
-    case veryOff = "非常に方向がずれています。"
+    case veryOff = "方向がとてもずれています。"
     ///めちゃくちゃずれているときの読み上げ文章
-    case extremelyOff = "目的地に対して後方向に進んでいます。"
+    case extremelyOff = "目的地に対して後ろ方向に進んでいます。"
     ///ほぼほぼ反対を向いているときの読み上げ文章
     case opposition = "目的地に対して反対方向に進んでいます。"
 }
@@ -71,12 +71,14 @@ final class ReadingHeading{
     var direction : Direction!
     var distance : Distance!
     var userHeading : CLHeading!
+    var reading : Reading!
     init(_ goalLocation:CLLocation) {
         self.updateCount = Int(0)
         self.goalLocation = goalLocation
     }
     ///ユーザーの位置情報が更新されたときに呼ばれるメソッド
     public func updateUserLocation(_ userLocation:CLLocation){
+        print("読み上げヘッディングの位置情報も更新されました")
         //ユーザー位置情報の更新を行う
         self.userLocation = userLocation
         //更新されたときに1ポイント追加していく
@@ -108,7 +110,6 @@ final class ReadingHeading{
         if differenceDirection < 0{
             differenceDirection += 360
         }
-        print("ここまできている？")
         //差からReadingHeadingStateを算出する
         guard let directionCheck = checkDirection(differenceDirection) else{return}
         readingNotificationSetting(directionCheck,differenceDirection)
@@ -150,6 +151,7 @@ final class ReadingHeading{
         }
         return readingSentences
     }
+    //ReadingHeadingStateからReadingHeadingStateStringへの変換を行うメソッド
     private func stateToStringState(_ state:ReadingHeadingState) -> ReadingHeadingStateString?{
         switch state {
         case .veryGood:return ReadingHeadingStateString.veryGood
@@ -163,9 +165,31 @@ final class ReadingHeading{
         }
         return nil
     }
-    
-    ///ここで初めて通知設定を行う
-    private func readingNotificationSetting(_ state:ReadingHeadingState,_ differenceDirection:Double){
-        
+    //ファイル名を探すときに使用するメソッド
+    public func stringToFilename(_ state:ReadingHeadingStateString) -> ReadingHeadingStateAudioFileName?{
+        switch state {
+        case .veryGood:return ReadingHeadingStateAudioFileName.veryGood
+        case .good:return ReadingHeadingStateAudioFileName.good
+        case .littleOff:return ReadingHeadingStateAudioFileName.littleOff
+        case .off:return ReadingHeadingStateAudioFileName.off
+        case .veryOff:return ReadingHeadingStateAudioFileName.veryOff
+        case .extremelyOff:return ReadingHeadingStateAudioFileName.extremelyOff
+        case .opposition:return ReadingHeadingStateAudioFileName.opposition
+        default:break
+        }
+        return nil
     }
+    
+    ///ここから初めて通知設定を行う
+    private func readingNotificationSetting(_ state:ReadingHeadingState,_ differenceDirection:Double){
+        guard let state = stateToStringState(state) else{return}
+        reading = Reading(differenceDirection, state)
+        reading.readingToAudioFile(completion: {[weak self] in
+            //読み上げしてほしい文章を全て音声ファイルの中に格納できたら・・・
+            guard let _ = self else{return}
+            //ここから実際に通知を飛ばす処理をする
+            self!.notificationSetting(state,differenceDirection)
+        })
+    }
+    
 }

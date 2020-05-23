@@ -17,8 +17,8 @@ final class Reading{
     var audioFileName : String!
     var state : ReadingHeadingStateString!
     ///初期化のときに読み上げに使用する文章を受け取る
-    init(_ sentences:String,_ state:ReadingHeadingStateString) {
-        self.sentences = sentences
+    init(_ differenceDirection:Double,_ state:ReadingHeadingStateString) {
+        self.sentences = Direction.makeSentences(false,differenceDirection,state) != nil ? Direction.makeSentences(false,differenceDirection,state)! : state.rawValue
         self.talker = AVSpeechSynthesizer()
         self.utterance = AVSpeechUtterance(string:self.sentences)
         self.utterance.voice = AVSpeechSynthesisVoice(language: "ja-JP")
@@ -33,6 +33,7 @@ final class Reading{
         default:break
         }
     }
+
     ///実際に読み上げを実行するメソッド
     public func readingSentences(){
         guard let talker = talker else{return}
@@ -55,12 +56,16 @@ final class Reading{
         }
     }
     ///読み上げ機能を特定のファイルにダウンロードする
-    public func readingToAudioFile(){
+    public func readingToAudioFile(completion:(()->Void)?){
         guard let _ = audioFileName else{return}
         audioSettingChange()
         talker.write(utterance) { (buffer: AVAudioBuffer) in
             guard let pcmBuffer = buffer as? AVAudioPCMBuffer else {fatalError("unknown buffer type: \(buffer)")}
-            guard pcmBuffer.frameLength != 0 else{return}
+            guard self.bufferDataLengthCheck(pcmBuffer) else{
+                //全ての読み上げテキストがファイルに書き込まれたら・・・
+                completion?()
+                return
+            }
             // append buffer to file
             if self.output == nil {
                 do{
@@ -78,7 +83,6 @@ final class Reading{
                     settings: pcmBuffer.format.settings,
                     commonFormat: .pcmFormatInt16,
                     interleaved: false)
-                    print("ファイル作成には成功")
                     
                 }catch{
                     print("これが失敗！")
@@ -86,7 +90,6 @@ final class Reading{
             }
             do{
                 try self.output?.write(from: pcmBuffer)
-                print("成功！")
             }catch{
                 print("失敗！")
             }
@@ -103,11 +106,27 @@ final class Reading{
                     //if you convert to NSDictionary, you can get file size old way as well.
                     let dict = attr as NSDictionary
                     fileSize = dict.fileSize()
-                    print(fileSize)
+                    //print(fileSize)
                 }
             } catch {
                 print("Error: \(error)")
             }
         }
+    }
+    
+    ///残りのバッファ(記憶装置)の中身のサイズを調べてなかったら終了の合図
+    private func bufferDataLengthCheck(_ pcmBuffer:AVAudioPCMBuffer)->Bool{
+        let audioBuffer = pcmBuffer.audioBufferList.pointee.mBuffers
+        let data = Data(bytes: audioBuffer.mData!, count: Int(audioBuffer.mDataByteSize))
+        print(data)
+        if data.count <= 0{
+            print("全ての書き込みが終了しました")
+            //全ての書き込みが成功しました
+            return false
+        }else{
+            //まだ書き込みの途中です
+            return true
+        }
+        return true
     }
 }
