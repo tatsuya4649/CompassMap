@@ -20,6 +20,7 @@ extension CompassMapViewController:CompassDelegate{
         compass.changeMapSize()
         view.addSubview(compass)
         view.sendSubviewToBack(compass)
+        compassDesign = CompassDesign.normal
         guard let region = info[.region] as? CLRegion else{return}
         guard let circleRegion = region as? CLCircularRegion else{return}
         let circle = MKCircle(center: circleRegion.center, radius: circleRegion.radius)
@@ -59,5 +60,10 @@ extension CompassMapViewController:CompassDelegate{
     public func resetSizeCompassMap(){
         guard let _ = compass else{return}
         compass.resetMapSize()
+    }
+    ///コンパスのデザインを変更する際に呼び出されるメソッド
+    public func changeTheCompassUI(_ type:CompassDesign){
+        guard let compass = compass else{return}
+        compass.changeTheCompassUI(type)
     }
 }

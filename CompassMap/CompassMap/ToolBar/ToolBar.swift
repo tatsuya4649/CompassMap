@@ -90,7 +90,7 @@ extension CompassMapViewController:FloatingPanelControllerDelegate{
     }
     
     @objc func changeCompassButtonItemClick(_ sender:UIBarButtonItem){
-        print("ツールバーの変更ボタンがクリックされました")
         impact()
+        changeTheCompass()
     }
 }
