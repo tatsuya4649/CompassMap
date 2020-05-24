@@ -12,6 +12,7 @@ import MapKit
 final class Distance{
     var location1 : CLLocation!
     var location2 : CLLocation!
+    ///地点1が出発ポイント、地点2がゴールポイント(厳密には逆にしても問題はない)
     init(_ location1:CLLocation,_ location2:CLLocation) {
         self.location1 = location1
         self.location2 = location2
