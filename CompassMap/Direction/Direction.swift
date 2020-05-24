@@ -53,6 +53,6 @@ final class Direction{
             leftOrRight = LeftOrRight.left.rawValue
         }
         let string = "\(leftOrRight)に\(round(differenceDirection))度回転した方向が正しい方向です。"
-        return addStateRawValue ? state.rawValue + string : state.rawValue
+        return addStateRawValue ? state.rawValue + string : string
     }
 }

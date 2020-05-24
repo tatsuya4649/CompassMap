@@ -56,11 +56,21 @@ extension SearchHistoryView:UICollectionViewDelegate,UICollectionViewDataSource{
         guard let info = info else{return}
         guard info.count > 0 else{return}
         for number in 0..<info.count{
-            print(number)
             //セルがあったら、ユーザー位置情報の更新と距離ラベルの更新を行う
             guard let cell = searchHistoryCollectionView.cellForItem(at: IndexPath(item: number, section: 0)) as? SearchHistoryCollectionViewCell else{continue}
             cell.userLocation = userLocation
             cell.updateDistanceLabel(userLocation)
+        }
+    }
+    ///コレクションの全セル内のヒーロー遷移IDを削除するためのメソッド
+    public func collectionViewResetHero(){
+        guard let _ = searchHistoryCollectionView else{return}
+        guard let info = info else{return}
+        guard info.count > 0 else{return}
+        for number in 0..<info.count{
+            //セルがあったら、ユーザー位置情報の更新と距離ラベルの更新を行う
+            guard let cell = searchHistoryCollectionView.cellForItem(at: IndexPath(item: number, section: 0)) as? SearchHistoryCollectionViewCell else{continue}
+            cell.removeHeroID()
         }
     }
 }

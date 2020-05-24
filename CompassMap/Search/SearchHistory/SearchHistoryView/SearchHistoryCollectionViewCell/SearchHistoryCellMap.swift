@@ -17,7 +17,7 @@ extension SearchHistoryCollectionViewCell:MKMapViewDelegate{
         mapView.layer.cornerRadius = view.layer.cornerRadius
         mapView.layer.maskedCorners = [.layerMinXMinYCorner,.layerMaxXMinYCorner]
         self.contentView.addSubview(mapView)
-        map = MKMapView(frame: CGRect(x: 0, y: 0, width: view.bounds.size.width + 100, height: 0.7*view.bounds.size.height + 100))
+        map = MKMapView(frame: CGRect(x: 0, y: 0, width: view.bounds.size.width + 0, height: 0.7*view.bounds.size.height + 0))
         map.center = CGPoint(x: mapView.frame.size.width/2, y: mapView.frame.size.height/2)
         map.mapType = .standard
         map.showsUserLocation = true
