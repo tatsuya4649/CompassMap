@@ -46,6 +46,11 @@ extension NotificationSettingTableViewCell{
         haveSegmentControl = UISegmentedControl(items: [HaveSelection.hand.rawValue,HaveSelection.pocket.rawValue])
         haveSegmentControl.sizeToFit()
         haveSegmentControl.selectedSegmentIndex = 0
+        if let haveString = UserDefaults.standard.value(forKey: NotificationSettingElement.have.rawValue) as? String{
+            if let haveIndex = HaveSelection(rawValue: haveString)?.number{
+                haveSegmentControl.selectedSegmentIndex = haveIndex
+            }
+        }
         haveSegmentControl.addTarget(self, action: #selector(haveSegmentControlChange), for: .valueChanged)
         haveSegmentControl.center = CGPoint(x: width/2, y: contentView.frame.size.height/2)
         contentView.addSubview(haveSegmentControl)

@@ -56,8 +56,8 @@ extension Compass{
         map.showsUserLocation = true
         //コンパスは表示しない
         map.showsCompass = false
-        map.layer.borderWidth = 1
-        map.layer.borderColor =  UIColor.lightGray.cgColor
+        //map.layer.borderWidth = 1
+        //map.layer.borderColor =  UIColor.lightGray.cgColor
         addingMapHero()
     }
     private func goalSymbolToNormal(){

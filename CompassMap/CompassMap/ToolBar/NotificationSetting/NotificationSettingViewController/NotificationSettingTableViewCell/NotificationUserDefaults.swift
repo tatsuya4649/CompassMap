@@ -35,6 +35,7 @@ extension NotificationSettingTableViewCell{
     }
     ///持ち方設定の値をUserDefaultsに保存する
     public func notificationHaveSave(_ have:HaveSelection){
+        print("\(have.rawValue)で保存しました")
         UserDefaults.standard.setValue(have.rawValue, forKey: NotificationSettingElement.have.rawValue)
     }
 }

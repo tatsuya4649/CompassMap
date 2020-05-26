@@ -64,6 +64,25 @@ private enum DistanceSelectionInt:Int{
     case nine_hundred = 900
     case one_thousand = 1000
 }
+private enum DistanceSelectionIndex:Int{
+    case one_hundred = 0
+    case two_hundred = 1
+    case three_hundred = 2
+    case four_hundred = 3
+    case five_hundred = 4
+    case six_hundred = 5
+    case seven_hundred = 6
+    case eight_hundred = 7
+    case nine_hundred = 8
+    case one_thousand = 9
+    
+    init(_ distance:Int){
+        self.init(DistanceSelectionInt(rawValue: distance))
+    }
+    private init<T>(_ t:T){
+        self = unsafeBitCast(t, to: DistanceSelectionIndex.self)
+    }
+}
 
 extension NotificationSettingTableViewCell:UIPickerViewDelegate,UIPickerViewDataSource{
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -122,6 +141,9 @@ extension NotificationSettingTableViewCell:UIPickerViewDelegate,UIPickerViewData
         distancePicker.delegate = self
         distancePicker.dataSource = self
         distancePicker.selectRow(4, inComponent: 0, animated: false)
+        if let distanceInt = UserDefaults.standard.value(forKey: NotificationSettingElement.distance.rawValue) as? Int{
+            distancePicker.selectRow(DistanceSelectionIndex(distanceInt).rawValue, inComponent: 0, animated: false)
+        }
         contentView.addSubview(distancePicker)
         let distanceUnitLabel = UILabel()
         distanceUnitLabel.text = "m"

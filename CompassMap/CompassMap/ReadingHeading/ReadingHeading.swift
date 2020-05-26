@@ -51,6 +51,36 @@ public enum ReadingHeadingStateString : String{
     case extremelyOff = "目的地に対して後ろ方向に進んでいます。"
     ///ほぼほぼ反対を向いているときの読み上げ文章
     case opposition = "目的地に対して反対方向に進んでいます。"
+
+}
+public enum ReadingHeadingStatePocketString : String{
+    ///ほぼほぼ会っているときの読み上げ文章
+    case veryGood = "進んでいる方向と目的地の方向は合っています。"
+    ///まあまあ会っているときの読み上げ文章
+    case good = "進んでいる方向と目的地の方向が少しずれています。"
+    ///少しずれているときの読み上げ文章
+    case littleOff = "進んでいる方向と目的地の方向がだんだんずれてきています。"
+    ///ずれているときに読み上げ文章
+    case off = "進んでいる方向と目的地の方向がずれています。"
+    ///非常にずれているときの読み上げ文章
+    case veryOff = "進んでいる方向と目的地の方向がとてもずれています。"
+    ///めちゃくちゃずれているときの読み上げ文章
+    case extremelyOff = "目的地に対して後ろ方向に進んでいます。"
+    ///ほぼほぼ反対を向いているときの読み上げ文章
+    case opposition = "目的地に対して反対方向に進んでいます。"
+    
+    init(string:String){
+        self.init(ReadingHeadingStateString(rawValue: string))
+    }
+    private init<T>(_ t:T){
+        self = unsafeBitCast(t, to: ReadingHeadingStatePocketString.self)
+    }
+    var pocket : String{
+        return converted(ReadingHeadingStateString.self).rawValue
+    }
+    private func converted<T>(_ t: T.Type) -> T {
+        return unsafeBitCast(self, to: t)
+    }
 }
 public enum ReadingHeadingStateAudioFileName : String{
     case veryGood = "veryGood.caf"
@@ -87,6 +117,7 @@ final class ReadingHeading{
             nowDistance = Double(0)
         }else{
             NOTIFICATION_DISTANCE = NOTIFICATION_DISTANCE_DEFAULT_VALUE
+            nowDistance = Double(0)
         }
         if let notificationBool = UserDefaults.standard.value(forKey: NotificationSettingElement.notificationOnOrOff.rawValue) as? Bool{
             NOTIFICATION_BOOL = notificationBool
@@ -110,12 +141,16 @@ final class ReadingHeading{
         }
         //ユーザー位置情報の更新を行う
         self.userLocation = userLocation
+        guard let _ = nowDistance else{return}
+        print(nowDistance)
+        print(NOTIFICATION_DISTANCE)
+        print(NOTIFICATION_BOOL)
         //進んだ距離が通知距離を超えたら通知を発火し、nowDistanceを元に戻す
-        guard nowDistance > NOTIFICATION_DISTANCE else{return}
+        guard nowDistance > (NOTIFICATION_DISTANCE != nil ? NOTIFICATION_DISTANCE : NOTIFICATION_DISTANCE_DEFAULT_VALUE) else{return}
         //通知用距離を0に戻す
         nowDistance = Double(0)
         //通知を行うかどうかの設定
-        guard NOTIFICATION_BOOL else{return}
+        guard NOTIFICATION_BOOL != nil ? NOTIFICATION_BOOL : NOTIFICATION_BOOL_DEFAULT_VALUE else{return}
         //規定の距離を超えたら通知を行う
         notificationNowState()
     }
@@ -162,6 +197,7 @@ final class ReadingHeading{
         }
         //差からReadingHeadingStateを算出する
         guard let directionCheck = checkDirection(differenceDirection) else{return}
+        print(directionCheck)
         readingNotificationSetting(directionCheck,differenceDirection)
     }
     private func checkDirection(_ differenceDirection:Double)->ReadingHeadingState?{

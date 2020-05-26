@@ -59,6 +59,7 @@ extension CompassMapViewController:CompassDelegate{
     func nowToGoalPolyLine(completion:((MKRoute)->Void)?) {
         guard let region = info[.region] as? CLRegion else{return}
         guard let circleRegion = region as? CLCircularRegion else{return}
+        guard let _ = userLocation else{return}
         let fromPlacemark = MKPlacemark(coordinate:CLLocationCoordinate2D(latitude: userLocation.coordinate.latitude, longitude: userLocation.coordinate.longitude), addressDictionary:nil)
         let toPlacemark = MKPlacemark(coordinate:circleRegion.center, addressDictionary:nil)
         let fromMapItem = MKMapItem(placemark: fromPlacemark)

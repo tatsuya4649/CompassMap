@@ -24,7 +24,11 @@ extension NotificationSettingTableViewCell{
     private func notificationSwitchSetting(_ width:CGFloat){
         notificationSwitch = UISwitch()
         notificationSwitch.sizeToFit()
-        notificationSwitch.isOn = false
+        if let bool = UserDefaults.standard.value(forKey: NotificationSettingElement.notificationOnOrOff.rawValue) as? Bool{
+            notificationSwitch.isOn = bool
+        }else{
+            notificationSwitch.isOn = NOTIFICATION_BOOL_DEFAULT_VALUE
+        }
         notificationSwitch.center = CGPoint(x: width - 20 - notificationSwitch.frame.size.width/2, y: contentView.frame.size.height/2)
         notificationSwitch.addTarget(self, action: #selector(notificationSwitchChange), for: .valueChanged)
         contentView.addSubview(notificationSwitch)

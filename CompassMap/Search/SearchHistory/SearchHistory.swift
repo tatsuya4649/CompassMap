@@ -28,6 +28,11 @@ extension SearchViewController{
         //1つ以上の検索履歴があったら、UIのセッティングを行うメソッドを呼び出す
         searchHistorySetting(searchElementValueDicArray)
     }
+    ///データベースに保存してある検索履歴を全て削除するためのメソッド
+    public func removeAllSearchHistory(){
+        searchHistory = SearchHistoryOperation()
+        searchHistory.removeAllData()
+    }
 }
 
 ///検索履歴としてデータベースに保存されているデータを操作するためのファイナルクラス
@@ -103,5 +108,24 @@ final class SearchHistoryOperation{
         //検索履歴を新しい順(最近順)にするためソートする
         //reversedで古い順から新しい順に変換される
         return searchElementValueDicArray.reversed()
+    }
+    ///全ての検索履歴を削除するためのメソッド
+    public func removeAllData(){
+        searchHistoryArray = Array<SearchHistory>()
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "SearchHistory")
+        do{
+            searchHistoryArray = try context.fetch(request) as! Array<SearchHistory>
+            guard searchHistoryArray.count > 0 else{return}
+            for history in searchHistoryArray{
+                context.delete(history)
+            }
+        }catch{
+            print("データベースからのデータの取得に失敗しました")
+        }
+        do{
+            try context.save()
+        }catch{
+            print("データベースの保存に失敗しました")
+        }
     }
 }

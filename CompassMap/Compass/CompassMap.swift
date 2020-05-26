@@ -29,8 +29,8 @@ extension Compass:MKMapViewDelegate{
         map.showsUserLocation = true
         //コンパスは表示しない
         map.showsCompass = false
-        map.layer.borderWidth = 1
-        map.layer.borderColor =  UIColor.lightGray.cgColor
+        //map.layer.borderWidth = 1
+        //map.layer.borderColor =  UIColor.lightGray.cgColor
         mapView.addSubview(map)
         //タイプ別のサイズを定義する
         normalMapSize = self.frame.size.width*0.5
