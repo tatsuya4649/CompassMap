@@ -16,6 +16,10 @@ public enum NotificationSettingElement:String{
     case distance = "distance"
     case have = "have"
     case saveCompassMapData = "saveCompassMapData"
+    case address = "address"
+    case circleRegionLatitude = "circleRegionLatitude"
+    case circleRegionLongitude = "circleRegionLongitude"
+    case circleRegionRadius = "circleRegionRadius"
 }
 let NOTIFICATION_DISTANCE_DEFAULT_VALUE : Double = 500.0
 let NOTIFICATION_BOOL_DEFAULT_VALUE : Bool = false
