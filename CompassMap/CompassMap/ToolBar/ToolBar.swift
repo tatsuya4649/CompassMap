@@ -11,10 +11,11 @@ import UIKit
 import FontAwesome_swift
 import FloatingPanel
 
-extension CompassMapViewController:FloatingPanelControllerDelegate{
+extension CompassMapViewController:FloatingPanelControllerDelegate,FloatingPanelMapControllerDelegate{
+    
     ///ツールバーを表示させるためのメソッド
     public func toolBarSetting(){
-        toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width*0.6, height: 50))
+        toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width*0.7, height: 50))
         mapButtonItem = UIBarButtonItem(image: UIImage.fontAwesomeIcon(name: .map, style: .solid, textColor: .white, size: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(mapButtonItemClick))
         notificationButtonItem = UIBarButtonItem(image: UIImage.fontAwesomeIcon(name: .bell, style: .solid, textColor: .white, size: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(notificationButtonItemClick))
         shareButtonItem = UIBarButtonItem(image: UIImage.fontAwesomeIcon(name: .shareSquare, style: .solid, textColor: .white, size: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(shareButtonItemClick))
@@ -45,6 +46,7 @@ extension CompassMapViewController:FloatingPanelControllerDelegate{
         fpc = FloatingPanelController()
         fpc.isRemovalInteractionEnabled = false
         fpcMap = FloatingPanelMapController()
+        fpcMap.delegate = self
         fpcMap.setUp(compass.map)
         fpc.set(contentViewController: fpcMap)
         fpc.delegate = self
@@ -54,10 +56,17 @@ extension CompassMapViewController:FloatingPanelControllerDelegate{
         //fpcが出現している間は画面のパンジェスチャーを解除する
         removePanGesture()
     }
+    func closeMap() {
+        impact()
+        fpc.removePanelFromParent(animated: true)
+        fpc = nil
+        panGestureSetting()
+    }
     ///ツールバーの通知ボタンが押されたときの処理
     @objc func notificationButtonItemClick(_ sender:UIBarButtonItem){
         print("ツールバーの通知ボタンがクリックされました")
         impact()
+        compassNotificationSetting(sender)
     }
     ///ツールバーのアクションボタンが押されたときの処理
     @objc func shareButtonItemClick(_ sender:UIBarButtonItem){

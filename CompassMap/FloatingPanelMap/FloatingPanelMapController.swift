@@ -11,9 +11,15 @@ import MapKit
 
 let FLOATINGPANEL_MAP_TOOLBAR_HEIGHT : CGFloat = 50.0
 
+protocol FloatingPanelMapControllerDelegate : AnyObject {
+    func closeMap()
+}
+
 class FloatingPanelMapController: UIViewController,MKMapViewDelegate {
+    weak var delegate : FloatingPanelMapControllerDelegate!
     var map : MKMapView!
     var toolBar : UIToolbar!
+    var closeButton : UIBarButtonItem!
     var changeMapTypeButton : UIBarButtonItem!
     var shareButton : UIBarButtonItem!
     override func viewDidLoad() {
@@ -24,10 +30,11 @@ class FloatingPanelMapController: UIViewController,MKMapViewDelegate {
     
     public func setUp(_ mapView:MKMapView){
         toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: FLOATINGPANEL_MAP_TOOLBAR_HEIGHT))
+        closeButton = UIBarButtonItem(image: UIImage.fontAwesomeIcon(name: .chevronDown, style: .solid, textColor: .black, size: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(closeMap))
         changeMapTypeButton = UIBarButtonItem(image: UIImage.fontAwesomeIcon(name: .syncAlt, style: .solid, textColor: .black, size: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(changeMapType))
         shareButton = UIBarButtonItem(image: UIImage.fontAwesomeIcon(name: .shareSquare, style: .solid, textColor: .black, size: CGSize(width: 30, height: 30)).withRenderingMode(.alwaysOriginal), style: .done, target: nil, action: #selector(shareButtonClick))
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        toolBar.items = [flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,changeMapTypeButton,flexibleSpace,shareButton]
+        toolBar.items = [closeButton,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,flexibleSpace,changeMapTypeButton,flexibleSpace,shareButton]
         view.addSubview(toolBar)
         map = MKMapView(frame: CGRect(x: 0, y: FLOATINGPANEL_MAP_TOOLBAR_HEIGHT, width: view.frame.size.width, height: view.frame.size.height - FLOATINGPANEL_MAP_TOOLBAR_HEIGHT))
         map.delegate = self
@@ -116,5 +123,9 @@ class FloatingPanelMapController: UIViewController,MKMapViewDelegate {
         // Pass the selected object to the new view controller.
     }
     */
-
+    //地図を閉じるためのボタン
+    @objc func closeMap(_ sender:UIBarButtonItem){
+        guard let delegate = delegate else{return}
+        delegate.closeMap()
+    }
 }

@@ -20,10 +20,11 @@ extension Compass:SymbolDelegate{
     
     ///コンパスのゴールをボタンで表示させる
     public func goalSymbolSetting(){
-        goalSymbolBaseView = UIView(frame: CGRect(x: 0, y: 0, width: mapView.frame.size.width + 2*(DEFAULT_GOAL_SYMBOL_MARGIN + DEFAULT_GOAL_SYMBOL_WIDTH_HEIGHT_SIZE), height: mapView.frame.size.height + 2*(DEFAULT_GOAL_SYMBOL_MARGIN + DEFAULT_GOAL_SYMBOL_WIDTH_HEIGHT_SIZE)))
+        goalSymbolBaseView = HallowOutView(frame: CGRect(x: 0, y: 0, width: mapView.frame.size.width + 2*(DEFAULT_GOAL_SYMBOL_MARGIN + DEFAULT_GOAL_SYMBOL_WIDTH_HEIGHT_SIZE), height: mapView.frame.size.height + 2*(DEFAULT_GOAL_SYMBOL_MARGIN + DEFAULT_GOAL_SYMBOL_WIDTH_HEIGHT_SIZE)))
         goalSymbolBaseView.backgroundColor = UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 1)
         goalSymbolBaseView.center = mapView.center
         goalSymbolBaseView.layer.cornerRadius = goalSymbolBaseView.frame.size.height/2
+        goalSymbolBaseView.hallowOut(mapView.frame.size.height/2)
         self.addSubview(goalSymbolBaseView)
         goalSymbol = Symbol(frame: CGRect(x: 0, y: 0, width: DEFAULT_GOAL_SYMBOL_WIDTH_HEIGHT_SIZE, height: DEFAULT_GOAL_SYMBOL_WIDTH_HEIGHT_SIZE))
         goalSymbol.backgroundColor = .black
@@ -35,9 +36,23 @@ extension Compass:SymbolDelegate{
         self.sendSubviewToBack(goalSymbolBaseView)
     }
     public func transformGoalSymbol(_ angle:Double,_ nowHeading:Double){
-        UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear, animations: {[weak self] in
-            guard let _ = self else{return}
-            self!.goalSymbolBaseView.transform = CGAffineTransform(rotationAngle: CGFloat(-nowHeading+angle) * CGFloat.pi / 180)
-        }, completion: nil)
+        if goalSymbolBaseView != nil{
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveLinear, animations: {[weak self] in
+                guard let _ = self else{return}
+                if self!.goalSymbolBaseView != nil{
+                    self!.goalSymbolBaseView.transform = CGAffineTransform(rotationAngle: CGFloat(-nowHeading+angle) * CGFloat.pi / 180)
+                }
+                self!.nowTransformRotation = CGAffineTransform(rotationAngle: CGFloat(-nowHeading+angle) * CGFloat.pi / 180)
+            }, completion: nil)
+        }
+        if arrowView != nil{
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveLinear, animations: {[weak self] in
+                guard let _ = self else{return}
+                if self!.arrowView != nil{
+                    self!.arrowView.transform = CGAffineTransform(rotationAngle: CGFloat(-nowHeading+angle) * CGFloat.pi / 180)
+                }
+                self!.nowTransformRotation = CGAffineTransform(rotationAngle: CGFloat(-nowHeading+angle) * CGFloat.pi / 180)
+            }, completion: nil)
+        }
     }
 }

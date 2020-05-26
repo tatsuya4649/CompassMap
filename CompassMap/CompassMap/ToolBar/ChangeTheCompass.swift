@@ -26,10 +26,10 @@ extension CompassMapViewController{
             print("コンパスのデザインをビッグマップに変更します")
             self.compassDesign = CompassDesign.bigMap
         case .bigMap:
-            print("コンパスのデザインをノーマルに変更します")
+            print("コンパスのデザインをアローに変更します")
             self.compassDesign = CompassDesign.arrow
         case .arrow:
-            print("コンパスのデザインをアローに変更します")
+            print("コンパスのデザインをノーマルに変更します")
             self.compassDesign = CompassDesign.normal
         default:break
         }

@@ -32,13 +32,18 @@ extension Compass:MKMapViewDelegate{
         map.layer.borderWidth = 1
         map.layer.borderColor =  UIColor.lightGray.cgColor
         mapView.addSubview(map)
+        //タイプ別のサイズを定義する
+        normalMapSize = self.frame.size.width*0.5
+        bigMapSize = self.frame.size.width
     }
     public func nowLocationToGoalLocationPolyLine(){
         guard let delegate = delegate else{return}
         delegate.nowToGoalPolyLine(completion: {[weak self] route in
             guard let _ = self else{return}
+            guard let _ = self!.map else{return}
             guard let polyLine = route.polyline as? MKPolyline else{return}
             self!.map.addOverlay(polyLine)
+            self!.polyLine = polyLine
         })
     }
     ///位置情報の更新に従って、行う
@@ -70,6 +75,7 @@ extension Compass:MKMapViewDelegate{
     }
     ///ゴール地点にサークルを描く
     public func addingCircleOverLay(_ circle:MKCircle){
+        guard let _ = map else{return}
         map.addOverlay(circle)
     }
     ///サークルのデザインを決める
@@ -103,4 +109,15 @@ extension Compass:MKMapViewDelegate{
         map.center = CGPoint(x: mapView.frame.size.width/2, y: mapView.frame.size.height/2)
         map.layer.cornerRadius = map.frame.size.height/2
     }
+    ///地図にヒーロー遷移IDを追加するメソッド
+    public func addingMapHero(){
+        guard let _ = map else{return}
+        map.hero.id = CandidateCellHeroElement.map.rawValue
+    }
+    ///地図のヒーロー遷移IDを削除するメソッド
+    public func removeMapHero(){
+        guard let _ = map else{return}
+        map.hero.id = nil
+    }
+    
 }

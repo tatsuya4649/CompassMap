@@ -15,6 +15,8 @@ protocol CompassDelegate : AnyObject {
     func goalCircle() -> MKCircle?
     ///現在地から目的地までのルートラインを作成してMKPolyLineだけ返してもらうデリゲートメソッド
     func nowToGoalPolyLine(completion:((MKRoute)->Void)?)
+    //現在地の場所などのRegion情報を取得する
+    func nowUserRegion() -> MKCoordinateRegion?
 }
 ///現在地から目的地の場所を指すコンパス
 final class Compass: UIView {
@@ -23,13 +25,19 @@ final class Compass: UIView {
     var nowDirection : CLHeading!
     var mapView : UIView!
     var map : MKMapView!
+    var normalMapSize : CGFloat!
+    var bigMapSize : CGFloat!
+    var visualEffectView : UIVisualEffectView!
+    var nowTransformRotation : CGAffineTransform!
     //方向を示すラベル
     var frontLabel : UILabel!
     var backLabel : UILabel!
     var rightLabel : UILabel!
     var leftLabel : UILabel!
     var goalSymbol : Symbol!
-    var goalSymbolBaseView : UIView!
+    var goalSymbolBaseView : HallowOutView!
+    var polyLine : MKPolyline!
+    var arrowView : ArrowView!
     init(view:UIView){
         super.init(frame :CGRect(x: 0, y: 0, width: view.frame.size.width, height: view.frame.size.width))
         //self.backgroundColor = .red

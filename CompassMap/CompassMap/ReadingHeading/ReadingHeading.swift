@@ -10,8 +10,6 @@ import Foundation
 import CoreLocation
 import AVFoundation
 
-let READING_HEADING_UPDATE_COUNT : Int = 0
-
 fileprivate enum ReadingHeadingState{
     case veryGood
     case good
@@ -68,29 +66,72 @@ final class ReadingHeading{
     var updateCount : Int!
     var goalLocation : CLLocation!
     var userLocation : CLLocation!
+    var nowDistance : Double!
     var direction : Direction!
     var distance : Distance!
     var userHeading : CLHeading!
     var reading : Reading!
+    var userHeadingPocket : Double!
+    ///通知をする設定距離
+    var NOTIFICATION_DISTANCE : Double!
+    ///通知をするかどうかの設定
+    var NOTIFICATION_BOOL : Bool!
+    ///通知設定で行った携帯の持ち方に関する設定
+    var NOTIFICATION_HAVE : HaveSelection!
     init(_ goalLocation:CLLocation) {
         self.updateCount = Int(0)
         self.goalLocation = goalLocation
+        //UserDefaultsを参照して、通知設定に合わせた通知を行うための処理
+        if let notificationDistance = UserDefaults.standard.value(forKey: NotificationSettingElement.distance.rawValue) as? Int{
+            NOTIFICATION_DISTANCE = Double(notificationDistance)
+            nowDistance = Double(0)
+        }else{
+            NOTIFICATION_DISTANCE = NOTIFICATION_DISTANCE_DEFAULT_VALUE
+        }
+        if let notificationBool = UserDefaults.standard.value(forKey: NotificationSettingElement.notificationOnOrOff.rawValue) as? Bool{
+            NOTIFICATION_BOOL = notificationBool
+        }else{
+            NOTIFICATION_BOOL = NOTIFICATION_BOOL_DEFAULT_VALUE
+        }
+        if let notificationHave = UserDefaults.standard.value(forKey: NotificationSettingElement.have.rawValue) as? String{
+            NOTIFICATION_HAVE = HaveSelection(rawValue: notificationHave)
+        }else{
+            NOTIFICATION_HAVE = NOTIFICATION_HAVE_DEFAULT_VALUE
+        }
     }
     ///ユーザーの位置情報が更新されたときに呼ばれるメソッド
     public func updateUserLocation(_ userLocation:CLLocation){
         print("読み上げヘッディングの位置情報も更新されました")
+        //前回のユーザー位置情報から進んだ距離を算出する(2回目からの更新で)
+        //前回からの距離を使って方角を算出する(ポケット用)
+        if self.userLocation != nil{
+            nowDistance += checkDistance(userLocation)
+            self.userHeadingPocket = pocketDirection(self.userLocation,userLocation)
+        }
         //ユーザー位置情報の更新を行う
         self.userLocation = userLocation
-        //更新されたときに1ポイント追加していく
-        updateCount += 1
-        //10回以上更新されたらupdateCountを初期化して通知を行う
-        guard updateCount >= READING_HEADING_UPDATE_COUNT else{return}
+        //進んだ距離が通知距離を超えたら通知を発火し、nowDistanceを元に戻す
+        guard nowDistance > NOTIFICATION_DISTANCE else{return}
+        //通知用距離を0に戻す
+        nowDistance = Double(0)
+        //通知を行うかどうかの設定
+        guard NOTIFICATION_BOOL else{return}
+        //規定の距離を超えたら通知を行う
         notificationNowState()
-        updateCount = 0
+    }
+    ///更新されたユーザー位置情報と前回のユーザー位置情報との距離を算出する
+    private func checkDistance(_ userLocation:CLLocation)->Double{
+        distance = Distance(self.userLocation, userLocation)
+        return distance.getTwoLocationDistance()
     }
     ///ユーザーの向いている方角が更新されたときに呼ばれるメソッド
     public func updateUserHeading(_ userHeading:CLHeading){
         self.userHeading = userHeading
+    }
+    ///前回の位置と今回の位置から方角を算出する
+    private func pocketDirection(_ before:CLLocation,_ after:CLLocation)->Double{
+        direction = Direction(before, after)
+        return direction.getGoalDirectionFromNow()
     }
     ///今の状況を通知してあげる
     ///パターン1：ほぼほぼぴったりの方角を向いている
@@ -105,7 +146,16 @@ final class ReadingHeading{
         let goalDirectionFromNow = direction.getGoalDirectionFromNow()
         let userTrueHeading = Double(userHeading.trueHeading)
         ///現在ユーザーが向いている角度とゴール地点の角度がどれくらい違うのかを示す(0~360)
-        var differenceDirection = -userTrueHeading+goalDirectionFromNow
+        var differenceDirection = Double()
+        ///手に持って歩いている場合は最新の方角を使用して、ユーザーの向いている方角を算出する
+        if NOTIFICATION_HAVE == HaveSelection.hand{
+            differenceDirection = -userTrueHeading+goalDirectionFromNow
+        }else{
+            //ポケットに入れて歩いている場合は、最新一つ前と最新のユーザー位置情報を使用して算出した方角を使用する(位置情報から方角を算出)
+            if userHeadingPocket != nil{
+                differenceDirection = -userHeadingPocket+goalDirectionFromNow
+            }
+        }
         //万が一0以下になってしまったら360を足してプラスにする
         if differenceDirection < 0{
             differenceDirection += 360

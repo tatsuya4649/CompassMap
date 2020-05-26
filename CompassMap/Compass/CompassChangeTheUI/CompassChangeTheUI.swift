@@ -21,14 +21,14 @@ extension Compass{
     }
     ///コンパスのデザインを通常に変更するメソッド
     private func compassToNormal(){
-        
+        changeToNormalUI()
     }
     ///コンパスのデザインをビッグマップに変更するメソッド
     private func compassToBigMap(){
-        
+        changeToBigMapUI()
     }
     ///コンパスのデザインをアローに変更するメソッド
     private func compassToArrow(){
-        
+        changeToArrowUI()
     }
 }

@@ -33,6 +33,28 @@ extension CompassMapViewController:CompassDelegate{
         let circle = MKCircle(center: circleRegion.center, radius: circleRegion.radius)
         return circle
     }
+    func nowUserRegion() -> MKCoordinateRegion? {
+        guard let userLocation = userLocation else{return nil}
+        if latitudinalMeters == nil{
+            if  let info = info{
+                if let region = info[.region] as? CLRegion{
+                    if let circleRegion = region as? CLCircularRegion{
+                        latitudinalMeters = 5*circleRegion.radius
+                    }
+                }
+            }
+        }
+        if longitudinalMeters == nil{
+            if  let info = info{
+                if let region = info[.region] as? CLRegion{
+                    if let circleRegion = region as? CLCircularRegion{
+                        longitudinalMeters = 5*circleRegion.radius
+                    }
+                }
+            }
+        }
+        return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: userLocation.coordinate.latitude, longitude: userLocation.coordinate.longitude), latitudinalMeters: latitudinalMeters != nil ? latitudinalMeters : 100, longitudinalMeters: longitudinalMeters != nil ? longitudinalMeters : 100)
+    }
     //現在地と目的地から歩きのルートを検索してPolyLineのみを返すデリゲートメソッド
     func nowToGoalPolyLine(completion:((MKRoute)->Void)?) {
         guard let region = info[.region] as? CLRegion else{return}
