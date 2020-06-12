@@ -133,6 +133,9 @@ final class ReadingHeading{
     ///ユーザーの位置情報が更新されたときに呼ばれるメソッド
     public func updateUserLocation(_ userLocation:CLLocation){
         print("読み上げヘッディングの位置情報も更新されました")
+        if nowDistance == nil{
+            nowDistance = Double(0)
+        }
         //前回のユーザー位置情報から進んだ距離を算出する(2回目からの更新で)
         //前回からの距離を使って方角を算出する(ポケット用)
         if self.userLocation != nil{
@@ -141,16 +144,15 @@ final class ReadingHeading{
         }
         //ユーザー位置情報の更新を行う
         self.userLocation = userLocation
-        guard let _ = nowDistance else{return}
         print(nowDistance)
-        print(NOTIFICATION_DISTANCE)
-        print(NOTIFICATION_BOOL)
+        print(NOTIFICATION_DISTANCE != nil ? NOTIFICATION_DISTANCE : NOTIFICATION_DISTANCE_DEFAULT_VALUE)
         //進んだ距離が通知距離を超えたら通知を発火し、nowDistanceを元に戻す
         guard nowDistance > (NOTIFICATION_DISTANCE != nil ? NOTIFICATION_DISTANCE : NOTIFICATION_DISTANCE_DEFAULT_VALUE) else{return}
         //通知用距離を0に戻す
         nowDistance = Double(0)
         //通知を行うかどうかの設定
         guard NOTIFICATION_BOOL != nil ? NOTIFICATION_BOOL : NOTIFICATION_BOOL_DEFAULT_VALUE else{return}
+        print("規定距離を超えて、通知設定もオンになっているので通知を行います。")
         //規定の距離を超えたら通知を行う
         notificationNowState()
     }
@@ -204,7 +206,8 @@ final class ReadingHeading{
         ///方角を-180度~180度までに縮小させる
         var difference = differenceDirection > 180 ? differenceDirection - 360 : differenceDirection
         ///差を絶対値にすることで330度も30度も同じ方角差になる
-        var absDifference = abs(differenceDirection)
+        var absDifference = abs(difference)
+        print(absDifference)
         if absDifference < ReadingHeadingStateDouble.veryGood.rawValue{
             return ReadingHeadingState.veryGood
         }else if absDifference < ReadingHeadingStateDouble.good.rawValue{

@@ -12,7 +12,7 @@ import UIKit
 private enum NotificationSettingTableViewSection : String{
     case base = "基本設定"
     case distance = "通知距離設定：設定した一定距離進んだときに1度現在向いている方角とゴールの方角が一致しているかどうかアナウンスします。"
-    case have = "持ち方設定：持ち方によって方角の測定方法が変わります。"
+    case have = "持ち方設定：持ち方によって方角の測定方法が変わります。\n ・手持ちの場合：iPhoneの向きからの目的地の方向を通知します。\n ・ポケットの場合：進んでいる位置情報を元に目的地の方向を通知します。"
     
     var title : String{
         return converted(NotificationSettingTableViewSection.self).rawValue

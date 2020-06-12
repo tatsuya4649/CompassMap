@@ -44,15 +44,17 @@ final class Direction{
     
     public class func makeSentences(_ addStateRawValue:Bool,_ differenceDirection:Double,_ state:ReadingHeadingStateString)->String?{
         guard differenceDirection != 0.0 && differenceDirection != 360.0 else{return nil}
+        var difference = differenceDirection > 180 ? differenceDirection - 360 : differenceDirection
+        var absDifference = abs(difference)
         var leftOrRight = String()
-        //180度以下なら左回り
-        if differenceDirection <= 180{
+        //0度以下なら左回り
+        if difference >= 0{
             leftOrRight = LeftOrRight.right.rawValue
         }else{
-            //180度以上なら右回り
+            //0度以上なら右回り
             leftOrRight = LeftOrRight.left.rawValue
         }
-        let string = "\(leftOrRight)に\(Int(round(differenceDirection)))度回転した方向が正しい方向です。"
+        let string = "\(leftOrRight)に\(Int(round(absDifference)))度回転した方向が正しい方向です。"
         return addStateRawValue ? state.rawValue + string : string
     }
 }
